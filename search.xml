@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[@RequestParam和@RequestBody的区别【servyou总结】]]></title>
+    <url>%2F2019%2F05%2F21%2F%40RequestParam%E5%92%8C%40RequestBody%E7%9A%84%E5%8C%BA%E5%88%AB%2F</url>
+    <content type="text"><![CDATA[最近在公司写后台接口供前端调用，代码都是按照接口文档的要求实现的，并且自己用postman测试了一遍，参数取值都OK。接口文档的参数传递方式为：{xtdm:’001’}，请求方式都是POST，然后我就自然而然的采用了application/json方式测试。采用application/json方式测试接口之后，发现后台springmvc接收参数使用@RequestParam注解是取不到值的，于是我换成@RequestBody注解就取到值了，当时问题解决。后面整合前端联调接口时，发现前端请求到不了我的controller（http:400），但是postman始终是可以的。看了下前端的ajax请求，发现并不是按照文档的格式传递的参数。虽然是POST请求，但是地址栏也会跟参数过来，于是我尝试把@RequestBody又改为@RequestParam，结果又可以了，然后postman又不行了。 分析和结论我开始采用application/json方式测试，@RequestBody是支持的，后来发现前端的请求方式其实是application/x-www-form-urlencoded，所以@RequestBody就不支持了。只有@RequestParam才支持，并且不管是POST还是GET请求都是OK的。后来我将postman请求方式改为application/x-www-form-urlencoded，验证结果跟前端的一致。所以不要着急写后台接口，一定要明确前端的请求方式是哪一种，这样就避免了返工的情况。 @RequestParam和@RequestBody的使用场景@RequestParam① 支持POST和GET请求。② 只支持Content-Type：为application/x-www-form-urlencoded编码的内容。Http协议中，如果不指定Content-Type，则默认传递的参数就是application/x-www-form-urlencoded类型） @RequestBody① 不支持GET请求。② 必须要在请求头中申明content-Type（如application/json）springMvc通过HandlerAdapter配置的HttpMessageConverters解析httpEntity的数据，并绑定到相应的bean上。 @RequestParam案例使用@RequestParm用于绑定controller上的参数，可以是多个参数，也可以是一个Map集合，GET，POST均可。 @PostMapping(value = &quot;requestParam&quot;) @ResponseBody public Boolean requestParam(@RequestParam(name = &quot;code&quot;,required = false) String code){ System.out.println(&quot;code:&quot;+code); return true; } @RequestParm中name属性是指定参数名，required属性默认为ture，表示必传。若为false则为非必传。属性有defaultValue默认值选项，若该参数为null时，会将默认值填充到参数上。在项目中还可以使用map来接收多个参数： @RequestMapping(value = &quot;/menu.spring&quot;,method = RequestMethod.POST) public NewFrameResponseResult queryTreeList(@RequestParam Map&lt;String, Object&gt; param){ return NewFrameResponseResult.success(fyhsMenuTreeService.queryTreeList(param)); } @RequestBody案例@RequestBody绑定一个实体。 @PostMapping(value = &quot;requestBody&quot;) @ResponseBody public User requestBody(@RequestBody User user){ System.out.println(&quot;user:&quot;+user.getName()); return user; } @RequestBody也能采用map来接收多个参数。 @RequestMapping(value = &quot;/menu.spring&quot;,method = RequestMethod.POST) public NewFrameResponseResult queryTreeList(@RequestBody Map&lt;String, Object&gt; param){ return NewFrameResponseResult.success(fyhsMenuTreeService.queryTreeList(param)); }]]></content>
+      <categories>
+        <category>servyou总结</category>
+      </categories>
+  </entry>
+  <entry>
     <title><![CDATA[@Bean的用法]]></title>
     <url>%2F2019%2F05%2F20%2Fspring%2F</url>
     <content type="text"><![CDATA[@Bean是一个方法级别上的注解，主要用在@Configuration注解的类里，也可以用在@Component注解的类里，添加的bean的id为方法名。 案例下面是@Configuration里的一个例子。 @Configuration public class Configure { @Bean public FilterRegistrationBean registLog() { FilterRegistrationBean loggingFilter = new FilterRegistrationBean(new LoggingFilter()); loggingFilter.addUrlPatterns(&quot;/*&quot;); loggingFilter.setName(&quot;LoggingFilter&quot;); loggingFilter.setOrder(5); return loggingFilter; } } 这个配置就等同于之前在xml里的配置 &lt;beans&gt; &lt;bean id=&quot;registLog&quot; class=&quot;org.springframework.boot.web.servlet.FilterRegistrationBean&quot;/&gt; &lt;/beans&gt;]]></content>
@@ -8,8 +16,7 @@
         <category>spring相关技术</category>
       </categories>
       <tags>
-        <tag>编程</tag>
-        <tag>感悟</tag>
+        <tag>编程，感悟</tag>
       </tags>
   </entry>
 </search>
