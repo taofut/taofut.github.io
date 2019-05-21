@@ -1733,6 +1733,9 @@ pre .javascript .function {
   opacity: 1;
 }
 .site-author-image {
+  border-radius: 100%;
+}
+.site-author-image {
   transition: transform 1s ease-out;
 }
 .site-author-image:hover {
@@ -1771,7 +1774,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #7eff7e;
+  background: #91ff73;
 }
 .feed-link,
 .chat {
@@ -2797,7 +2800,7 @@ body {
   src: url("/fonts/wryh.ttf");
 }
 .site-title {
-  font-size: 30px !important;
+  font-size: 25px !important;
   font-family: 'wryh' !important;
 }
 .site-meta {
