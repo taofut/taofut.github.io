@@ -256,7 +256,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">2</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">3</span></a>
 
   </li>
         
@@ -359,6 +359,293 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/05/22/jackson常用注解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Taofut">
+      <meta itemprop="description" content="技术源于实践，技术改变世界">
+      <meta itemprop="image" content="/images/yu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="云哥Y">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/22/jackson常用注解/" class="post-title-link" itemprop="url">jackson常用注解【servyou总结】</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-22 15:18:29 / 修改时间：17:18:02" itemprop="dateCreated datePublished" datetime="2019-05-22T15:18:29+08:00">2019-05-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/servyou总结/" itemprop="url" rel="index"><span itemprop="name">servyou总结</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">3.2k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">3 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="开发问题一（-JsonInclude的使用）"><a href="#开发问题一（-JsonInclude的使用）" class="headerlink" title="开发问题一（@JsonInclude的使用）"></a>开发问题一（@JsonInclude的使用）</h3><p>在写后台接口回传数据到前端时，遇到一些细节问题，下面直接看代码。我要回传的对象类如下，从数据库查出来的任何类型数据都放data里参与序列化返回给前端。</p>
+<pre><code>@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class NewFrameResponseResult&lt;T&gt; {
+
+    private boolean success;
+
+    private T data;
+
+    private String error;
+
+}
+</code></pre><p><strong>情况</strong><br>假设数据库查出来为null，那么data就是null，执行sql是没问题的，success返回true。由于类上面定义了<em>@JsonInclude(JsonInclude.Include.NON_EMPTY)</em>，所以data为null是不会在序列化结果中显示的。前端获取的返回结果：{“success”:true}，后面的js代码直接拿data报错，因为data根本不存在。<br><strong>改进</strong><br>这时候就面临一个问题，我数据库是没查到数据，但是data这个属性还是要返回的，因为这是前端js获取数据的唯一字段，可以在没数据的情况下返回一个空的data（数组长度为零，但不为null）。</p>
+<pre><code>@JsonInclude(JsonInclude.Include.NON_NULL)
+public class NewFrameResponseResult&lt;T&gt; {
+
+    private boolean success;
+
+    private T data;
+
+    private String error;
+
+    public static NewFrameResponseResult success(Object data) {
+        return new NewFrameResponseResult(data == null ? Collections.EMPTY_LIST : data);
+    }
+
+}
+</code></pre><p>这里允许返回空对象，所以注解就要变为<em>@JsonInclude(JsonInclude.Include.NON_NULL)</em>，然后在返回的方法里判断为null，就将data转换为空集合。前端获取的返回结果：{“success”: true,”data”: []}<br><strong>说明</strong><br><em>JsonInclude.Include.NON_EMPTY</em>：属性为空或者null都不参与序列化。<br><em>JsonInclude.Include.NON_NULL</em>：属性为null不参与序列化。</p>
+<h3 id="开发问题二（-JsonIgnore和-JsonIgnoreProperties的使用）"><a href="#开发问题二（-JsonIgnore和-JsonIgnoreProperties的使用）" class="headerlink" title="开发问题二（@JsonIgnore和@JsonIgnoreProperties的使用）"></a>开发问题二（@JsonIgnore和@JsonIgnoreProperties的使用）</h3><p>这次是将数据库查出来的菜单目录封装成树结构，有一个树节点实体TreeNode。由于查出来的数据在封装树的时候需要定义pid参与子节点遍历，但是前端返回结果中是不需要pid这个字段的，那么就在pid字段上加上注解@JsonIgnore，这样pid既参与了树结构的封装，同时也可以不让前端接收到。</p>
+<pre><code>@JsonInclude(JsonInclude.Include.NON_EMPTY)
+public class TreeNode {
+    //根节点类型
+    public static final String NODE_TYPE_ROOT = &quot;ROOT&quot;;
+    //父节点类型（下面还存在子节点）
+    public static final String NODE_TYPE_GROUP = &quot;GROUP&quot;;
+    //子节点类型（只有子节点）
+    public static final String NODE_TYPE_LEAF = &quot;LEAF&quot;;
+    //节点名称
+    private String name;
+    //节点id
+    private String nodeId;
+    //节点类型
+    private String nodeType;
+    //图标
+    private String className = &quot;iconfont&quot;;
+    //节点url
+    private String url;
+    //父节点id
+    @JsonIgnore
+    private String pid;
+    //当前节点下的子节点
+    private List&lt;TreeNode&gt; children;
+    //菜单状态Hot（标记点击量高的菜单）
+    private String otherInfo;
+
+}
+</code></pre><p><strong>说明</strong><br><em>@JsonIgnore（作用在属性或方法）</em>：用来告诉Jackson在处理时忽略该注解标注的 java pojo 属性。<br><em>@JsonIgnoreProperties（作用在类）</em>：@JsonIgnoreProperties和@JsonIgnore的作用相同，都是告诉Jackson该忽略哪些属性，不同之处是@JsonIgnoreProperties是类级别的，并且可以同时指定多个属性。</p>
+<pre><code>@JsonIgnoreProperties(value = {&quot;pid&quot;,&quot;nodeType&quot;})
+public class TreeNode {
+    //根节点类型
+    public static final String NODE_TYPE_ROOT = &quot;ROOT&quot;;
+    //父节点类型（下面还存在子节点）
+    public static final String NODE_TYPE_GROUP = &quot;GROUP&quot;;
+    //子节点类型（只有子节点）
+    public static final String NODE_TYPE_LEAF = &quot;LEAF&quot;;
+    //节点名称
+    private String name;
+    //节点id
+    private String nodeId;
+    //节点类型
+    private String nodeType;
+    //图标
+    private String className = &quot;iconfont&quot;;
+    //节点url
+    private String url;
+    //父节点id
+    private String pid;
+    //当前节点下的子节点
+    private List&lt;TreeNode&gt; children;
+    //菜单状态Hot（标记点击量高的菜单）
+    private String otherInfo;
+
+}
+</code></pre><h3 id="JsonIgnoreType的使用"><a href="#JsonIgnoreType的使用" class="headerlink" title="@JsonIgnoreType的使用"></a>@JsonIgnoreType的使用</h3><p>@JsonIgnoreType标注在类上，当其他类引用该类时，该属性将被忽略。</p>
+<pre><code>@JsonIgnoreType
+public class User {
+    private Long id;
+    public Long getId() {
+        return id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+}
+
+public class Role {
+    private String name;
+    private String desc;
+    private User user;
+}
+</code></pre>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -839,7 +1126,7 @@ public class Configure {
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">3</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -959,7 +1246,7 @@ public class Configure {
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">3k</span>
+    <span title="站点总字数">6k</span>
   
 
   
@@ -968,7 +1255,7 @@ public class Configure {
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">3 分钟</span>
+    <span title="站点阅读时长">6 分钟</span>
   
 </div>
 
@@ -1431,6 +1718,8 @@ public class Configure {
 
   
   
+    
+      
     
       
     
