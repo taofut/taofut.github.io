@@ -112,13 +112,14 @@
     }
 </style>
   <meta name="description" content="开发问题一（@JsonInclude的使用）在写后台接口回传数据到前端时，遇到一些细节问题，下面直接看代码。我要回传的对象类如下，从数据库查出来的任何类型数据都放data里参与序列化返回给前端。">
+<meta name="keywords" content="servyou总结">
 <meta property="og:type" content="article">
 <meta property="og:title" content="jackson常用注解【servyou总结】">
 <meta property="og:url" content="http://yoursite.com/2019/05/22/jackson常用注解/index.html">
 <meta property="og:site_name" content="云哥Y">
 <meta property="og:description" content="开发问题一（@JsonInclude的使用）在写后台接口回传数据到前端时，遇到一些细节问题，下面直接看代码。我要回传的对象类如下，从数据库查出来的任何类型数据都放data里参与序列化返回给前端。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-05-23T05:52:26.287Z">
+<meta property="og:updated_time" content="2019-05-25T02:12:34.639Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jackson常用注解【servyou总结】">
 <meta name="twitter:description" content="开发问题一（@JsonInclude的使用）在写后台接口回传数据到前端时，遇到一些细节问题，下面直接看代码。我要回传的对象类如下，从数据库查出来的任何类型数据都放data里参与序列化返回给前端。">
@@ -275,7 +276,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">2</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">1</span></a>
 
   </li>
         
@@ -294,7 +295,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">1</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">2</span></a>
 
   </li>
 
@@ -435,7 +436,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-05-23 13:52:26" itemprop="dateModified" datetime="2019-05-23T13:52:26+08:00">2019-05-23</time>
+                <time title="修改时间：2019-05-25 10:12:34" itemprop="dateModified" datetime="2019-05-25T10:12:34+08:00">2019-05-25</time>
               
             
           </span>
@@ -452,7 +453,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/servyou总结/" itemprop="url" rel="index"><span itemprop="name">servyou总结</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/开发中常用注解/" itemprop="url" rel="index"><span itemprop="name">开发中常用注解</span></a></span>
 
                 
                 
@@ -489,7 +490,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">3.2k</span>
+                <span title="本文字数">3.1k</span>
               
 
               
@@ -524,105 +525,16 @@
 
       
         <h3 id="开发问题一（-JsonInclude的使用）"><a href="#开发问题一（-JsonInclude的使用）" class="headerlink" title="开发问题一（@JsonInclude的使用）"></a>开发问题一（@JsonInclude的使用）</h3><p>在写后台接口回传数据到前端时，遇到一些细节问题，下面直接看代码。我要回传的对象类如下，从数据库查出来的任何类型数据都放data里参与序列化返回给前端。<br><a id="more"></a></p>
-<pre><code>@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class NewFrameResponseResult&lt;T&gt; {
-
-    private boolean success;
-
-    private T data;
-
-    private String error;
-
-}
-</code></pre><p><strong>情况</strong><br>假设数据库查出来为null，那么data就是null，执行sql是没问题的，success返回true。由于类上面定义了<em>@JsonInclude(JsonInclude.Include.NON_EMPTY)</em>，所以data为null是不会在序列化结果中显示的。前端获取的返回结果：{“success”:true}，后面的js代码直接拿data报错，因为data根本不存在。<br><strong>改进</strong><br>这时候就面临一个问题，我数据库是没查到数据，但是data这个属性还是要返回的，因为这是前端js获取数据的唯一字段，可以在没数据的情况下返回一个空的data（数组长度为零，但不为null）。</p>
-<pre><code>@JsonInclude(JsonInclude.Include.NON_NULL)
-public class NewFrameResponseResult&lt;T&gt; {
-
-    private boolean success;
-
-    private T data;
-
-    private String error;
-
-    public static NewFrameResponseResult success(Object data) {
-        return new NewFrameResponseResult(data == null ? Collections.EMPTY_LIST : data);
-    }
-
-}
-</code></pre><p>这里允许返回空对象，所以注解就要变为<em>@JsonInclude(JsonInclude.Include.NON_NULL)</em>，然后在返回的方法里判断为null，就将data转换为空集合。前端获取的返回结果：{“success”: true,”data”: []}<br><strong>说明</strong><br><em>JsonInclude.Include.NON_EMPTY</em>：属性为空或者null都不参与序列化。<br><em>JsonInclude.Include.NON_NULL</em>：属性为null不参与序列化。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonInclude</span>(JsonInclude.Include.NON_EMPTY)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NewFrameResponseResult</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> success;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> T data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String error;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>情况</strong><br>假设数据库查出来为null，那么data就是null，执行sql是没问题的，success返回true。由于类上面定义了<em>@JsonInclude(JsonInclude.Include.NON_EMPTY)</em>，所以data为null是不会在序列化结果中显示的。前端获取的返回结果：{“success”:true}，后面的js代码直接拿data报错，因为data根本不存在。<br><strong>改进</strong><br>这时候就面临一个问题，我数据库是没查到数据，但是data这个属性还是要返回的，因为这是前端js获取数据的唯一字段，可以在没数据的情况下返回一个空的data（数组长度为零，但不为null）。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonInclude</span>(JsonInclude.Include.NON_NULL)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NewFrameResponseResult</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> success;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> T data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String error;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> NewFrameResponseResult <span class="title">success</span><span class="params">(Object data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> NewFrameResponseResult(data == <span class="keyword">null</span> ? Collections.EMPTY_LIST : data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里允许返回空对象，所以注解就要变为<em>@JsonInclude(JsonInclude.Include.NON_NULL)</em>，然后在返回的方法里判断为null，就将data转换为空集合。前端获取的返回结果：{“success”: true,”data”: []}<br><strong>说明</strong><br><em>JsonInclude.Include.NON_EMPTY</em>：属性为空或者null都不参与序列化。<br><em>JsonInclude.Include.NON_NULL</em>：属性为null不参与序列化。</p>
 <h3 id="开发问题二（-JsonIgnore和-JsonIgnoreProperties的使用）"><a href="#开发问题二（-JsonIgnore和-JsonIgnoreProperties的使用）" class="headerlink" title="开发问题二（@JsonIgnore和@JsonIgnoreProperties的使用）"></a>开发问题二（@JsonIgnore和@JsonIgnoreProperties的使用）</h3><p>这次是将数据库查出来的菜单目录封装成树结构，有一个树节点实体TreeNode。由于查出来的数据在封装树的时候需要定义pid参与子节点遍历，但是前端返回结果中是不需要pid这个字段的，那么就在pid字段上加上注解@JsonIgnore，这样pid既参与了树结构的封装，同时也可以不让前端接收到。</p>
-<pre><code>@JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class TreeNode {
-    //根节点类型
-    public static final String NODE_TYPE_ROOT = &quot;ROOT&quot;;
-    //父节点类型（下面还存在子节点）
-    public static final String NODE_TYPE_GROUP = &quot;GROUP&quot;;
-    //子节点类型（只有子节点）
-    public static final String NODE_TYPE_LEAF = &quot;LEAF&quot;;
-    //节点名称
-    private String name;
-    //节点id
-    private String nodeId;
-    //节点类型
-    private String nodeType;
-    //图标
-    private String className = &quot;iconfont&quot;;
-    //节点url
-    private String url;
-    //父节点id
-    @JsonIgnore
-    private String pid;
-    //当前节点下的子节点
-    private List&lt;TreeNode&gt; children;
-    //菜单状态Hot（标记点击量高的菜单）
-    private String otherInfo;
-
-}
-</code></pre><p><strong>说明</strong><br><em>@JsonIgnore（作用在属性或方法）</em>：用来告诉Jackson在处理时忽略该注解标注的 java pojo 属性。<br><em>@JsonIgnoreProperties（作用在类）</em>：@JsonIgnoreProperties和@JsonIgnore的作用相同，都是告诉Jackson该忽略哪些属性，不同之处是@JsonIgnoreProperties是类级别的，并且可以同时指定多个属性。</p>
-<pre><code>@JsonIgnoreProperties(value = {&quot;pid&quot;,&quot;nodeType&quot;})
-public class TreeNode {
-    //根节点类型
-    public static final String NODE_TYPE_ROOT = &quot;ROOT&quot;;
-    //父节点类型（下面还存在子节点）
-    public static final String NODE_TYPE_GROUP = &quot;GROUP&quot;;
-    //子节点类型（只有子节点）
-    public static final String NODE_TYPE_LEAF = &quot;LEAF&quot;;
-    //节点名称
-    private String name;
-    //节点id
-    private String nodeId;
-    //节点类型
-    private String nodeType;
-    //图标
-    private String className = &quot;iconfont&quot;;
-    //节点url
-    private String url;
-    //父节点id
-    private String pid;
-    //当前节点下的子节点
-    private List&lt;TreeNode&gt; children;
-    //菜单状态Hot（标记点击量高的菜单）
-    private String otherInfo;
-
-}
-</code></pre><h3 id="JsonIgnoreType的使用"><a href="#JsonIgnoreType的使用" class="headerlink" title="@JsonIgnoreType的使用"></a>@JsonIgnoreType的使用</h3><p>@JsonIgnoreType标注在类上，当其他类引用该类时，该属性将被忽略。</p>
-<pre><code>@JsonIgnoreType
-public class User {
-    private Long id;
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-}
-
-public class Role {
-    private String name;
-    private String desc;
-    private User user;
-}
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonInclude</span>(JsonInclude.Include.NON_EMPTY)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span> </span>&#123;</span><br><span class="line">    <span class="comment">//根节点类型</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NODE_TYPE_ROOT = <span class="string">"ROOT"</span>;</span><br><span class="line">    <span class="comment">//父节点类型（下面还存在子节点）</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NODE_TYPE_GROUP = <span class="string">"GROUP"</span>;</span><br><span class="line">    <span class="comment">//子节点类型（只有子节点）</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NODE_TYPE_LEAF = <span class="string">"LEAF"</span>;</span><br><span class="line">    <span class="comment">//节点名称</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="comment">//节点id</span></span><br><span class="line">    <span class="keyword">private</span> String nodeId;</span><br><span class="line">    <span class="comment">//节点类型</span></span><br><span class="line">    <span class="keyword">private</span> String nodeType;</span><br><span class="line">    <span class="comment">//图标</span></span><br><span class="line">    <span class="keyword">private</span> String className = <span class="string">"iconfont"</span>;</span><br><span class="line">    <span class="comment">//节点url</span></span><br><span class="line">    <span class="keyword">private</span> String url;</span><br><span class="line">    <span class="comment">//父节点id</span></span><br><span class="line">    <span class="meta">@JsonIgnore</span></span><br><span class="line">    <span class="keyword">private</span> String pid;</span><br><span class="line">    <span class="comment">//当前节点下的子节点</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;TreeNode&gt; children;</span><br><span class="line">    <span class="comment">//菜单状态Hot（标记点击量高的菜单）</span></span><br><span class="line">    <span class="keyword">private</span> String otherInfo;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>说明</strong><br><em>@JsonIgnore（作用在属性或方法）</em>：用来告诉Jackson在处理时忽略该注解标注的 java pojo 属性。<br><em>@JsonIgnoreProperties（作用在类）</em>：@JsonIgnoreProperties和@JsonIgnore的作用相同，都是告诉Jackson该忽略哪些属性，不同之处是@JsonIgnoreProperties是类级别的，并且可以同时指定多个属性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonIgnoreProperties</span>(value = &#123;<span class="string">"pid"</span>,<span class="string">"nodeType"</span>&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span> </span>&#123;</span><br><span class="line">    <span class="comment">//根节点类型</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NODE_TYPE_ROOT = <span class="string">"ROOT"</span>;</span><br><span class="line">    <span class="comment">//父节点类型（下面还存在子节点）</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NODE_TYPE_GROUP = <span class="string">"GROUP"</span>;</span><br><span class="line">    <span class="comment">//子节点类型（只有子节点）</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String NODE_TYPE_LEAF = <span class="string">"LEAF"</span>;</span><br><span class="line">    <span class="comment">//节点名称</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="comment">//节点id</span></span><br><span class="line">    <span class="keyword">private</span> String nodeId;</span><br><span class="line">    <span class="comment">//节点类型</span></span><br><span class="line">    <span class="keyword">private</span> String nodeType;</span><br><span class="line">    <span class="comment">//图标</span></span><br><span class="line">    <span class="keyword">private</span> String className = <span class="string">"iconfont"</span>;</span><br><span class="line">    <span class="comment">//节点url</span></span><br><span class="line">    <span class="keyword">private</span> String url;</span><br><span class="line">    <span class="comment">//父节点id</span></span><br><span class="line">    <span class="keyword">private</span> String pid;</span><br><span class="line">    <span class="comment">//当前节点下的子节点</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;TreeNode&gt; children;</span><br><span class="line">    <span class="comment">//菜单状态Hot（标记点击量高的菜单）</span></span><br><span class="line">    <span class="keyword">private</span> String otherInfo;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="JsonIgnoreType的使用"><a href="#JsonIgnoreType的使用" class="headerlink" title="@JsonIgnoreType的使用"></a>@JsonIgnoreType的使用</h3><p>@JsonIgnoreType标注在类上，当其他类引用该类时，该属性将被忽略。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonIgnoreType</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> Long <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Role</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> String desc;</span><br><span class="line">    <span class="keyword">private</span> User user;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -642,6 +554,12 @@ public class Role {
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/servyou总结/" rel="tag"># servyou总结</a>
+          
+        </div>
       
 
       
@@ -741,9 +659,7 @@ public class Role {
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">1</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -762,7 +678,9 @@ public class Role {
                     
                       
                     
-                    <span class="site-state-item-count">1</span>
+                      
+                    
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -851,7 +769,7 @@ public class Role {
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">6 分钟</span>
+    <span title="站点阅读时长">5 分钟</span>
   
 </div>
 

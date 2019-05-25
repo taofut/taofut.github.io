@@ -112,13 +112,14 @@
     }
 </style>
   <meta name="description" content="最近在公司写后台接口供前端调用，代码都是按照接口文档的要求实现的，并且自己用postman测试了一遍，参数取值都OK。接口文档的参数传递方式为：{xtdm:’001’}，请求方式都是POST，然后我就自然而然的采用了application/json方式测试。">
+<meta name="keywords" content="servyou总结">
 <meta property="og:type" content="article">
 <meta property="og:title" content="@RequestParam和@RequestBody的区别【servyou总结】">
 <meta property="og:url" content="http://yoursite.com/2019/05/21/@RequestParam和@RequestBody的区别/index.html">
 <meta property="og:site_name" content="云哥Y">
 <meta property="og:description" content="最近在公司写后台接口供前端调用，代码都是按照接口文档的要求实现的，并且自己用postman测试了一遍，参数取值都OK。接口文档的参数传递方式为：{xtdm:’001’}，请求方式都是POST，然后我就自然而然的采用了application/json方式测试。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-05-23T05:54:29.633Z">
+<meta property="og:updated_time" content="2019-05-25T02:17:27.474Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="@RequestParam和@RequestBody的区别【servyou总结】">
 <meta name="twitter:description" content="最近在公司写后台接口供前端调用，代码都是按照接口文档的要求实现的，并且自己用postman测试了一遍，参数取值都OK。接口文档的参数传递方式为：{xtdm:’001’}，请求方式都是POST，然后我就自然而然的采用了application/json方式测试。">
@@ -275,7 +276,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">2</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">1</span></a>
 
   </li>
         
@@ -294,7 +295,7 @@
       
     
 
-    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">1</span></a>
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">2</span></a>
 
   </li>
 
@@ -435,7 +436,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-05-23 13:54:29" itemprop="dateModified" datetime="2019-05-23T13:54:29+08:00">2019-05-23</time>
+                <time title="修改时间：2019-05-25 10:17:27" itemprop="dateModified" datetime="2019-05-25T10:17:27+08:00">2019-05-25</time>
               
             
           </span>
@@ -452,7 +453,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/servyou总结/" itemprop="url" rel="index"><span itemprop="name">servyou总结</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/开发中常用注解/" itemprop="url" rel="index"><span itemprop="name">开发中常用注解</span></a></span>
 
                 
                 
@@ -489,7 +490,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">2.2k</span>
+                <span title="本文字数">2.1k</span>
               
 
               
@@ -528,30 +529,14 @@
 <h3 id="RequestParam和-RequestBody的使用场景"><a href="#RequestParam和-RequestBody的使用场景" class="headerlink" title="@RequestParam和@RequestBody的使用场景"></a>@RequestParam和@RequestBody的使用场景</h3><p><strong>@RequestParam</strong><br>① 支持POST和GET请求。<br>② 只支持Content-Type：为application/x-www-form-urlencoded编码的内容。Http协议中，如果不指定Content-Type，则默认传递的参数就是application/x-www-form-urlencoded类型）</p>
 <p><strong>@RequestBody</strong><br>① 不支持GET请求。<br>② 必须要在请求头中申明content-Type（如application/json）springMvc通过HandlerAdapter配置的HttpMessageConverters解析httpEntity的数据，并绑定到相应的bean上。</p>
 <h3 id="RequestParam案例"><a href="#RequestParam案例" class="headerlink" title="@RequestParam案例"></a>@RequestParam案例</h3><p>使用@RequestParm用于绑定controller上的参数，可以是多个参数，也可以是一个Map集合，GET，POST均可。</p>
-<pre><code>@PostMapping(value = &quot;requestParam&quot;)
-@ResponseBody
-public Boolean requestParam(@RequestParam(name = &quot;code&quot;,required = false) String code){
-    System.out.println(&quot;code:&quot;+code);
-    return true;
-}
-</code></pre><p>@RequestParm中name属性是指定参数名，required属性默认为ture，表示必传。若为false则为非必传。属性有defaultValue默认值选项，若该参数为null时，会将默认值填充到参数上。<br>在项目中还可以使用map来接收多个参数：</p>
-<pre><code>@RequestMapping(value = &quot;/menu.spring&quot;,method = RequestMethod.POST)
-public NewFrameResponseResult queryTreeList(@RequestParam Map&lt;String, Object&gt; param){
-    return NewFrameResponseResult.success(fyhsMenuTreeService.queryTreeList(param));
-}
-</code></pre><h3 id="RequestBody案例"><a href="#RequestBody案例" class="headerlink" title="@RequestBody案例"></a>@RequestBody案例</h3><p>@RequestBody绑定一个实体。</p>
-<pre><code>@PostMapping(value = &quot;requestBody&quot;)
-@ResponseBody
-public User requestBody(@RequestBody  User user){
-    System.out.println(&quot;user:&quot;+user.getName());
-    return user;
-}
-</code></pre><p>@RequestBody也能采用map来接收多个参数。</p>
-<pre><code>@RequestMapping(value = &quot;/menu.spring&quot;,method = RequestMethod.POST)
-public NewFrameResponseResult queryTreeList(@RequestBody Map&lt;String, Object&gt; param){
-    return NewFrameResponseResult.success(fyhsMenuTreeService.queryTreeList(param));
-}
-</code></pre>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping</span>(value = <span class="string">"requestParam"</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Boolean <span class="title">requestParam</span><span class="params">(@RequestParam(name = <span class="string">"code"</span>,required = <span class="keyword">false</span>)</span> String code)</span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"code:"</span>+code);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>@RequestParm中name属性是指定参数名，required属性默认为ture，表示必传。若为false则为非必传。属性有defaultValue默认值选项，若该参数为null时，会将默认值填充到参数上。<br>在项目中还可以使用map来接收多个参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/menu.spring"</span>,method = RequestMethod.POST)</span><br><span class="line"><span class="function"><span class="keyword">public</span> NewFrameResponseResult <span class="title">queryTreeList</span><span class="params">(@RequestParam Map&lt;String, Object&gt; param)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> NewFrameResponseResult.success(fyhsMenuTreeService.queryTreeList(param));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="RequestBody案例"><a href="#RequestBody案例" class="headerlink" title="@RequestBody案例"></a>@RequestBody案例</h3><p>@RequestBody绑定一个实体。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PostMapping</span>(value = <span class="string">"requestBody"</span>)</span><br><span class="line"><span class="meta">@ResponseBody</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> User <span class="title">requestBody</span><span class="params">(@RequestBody  User user)</span></span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"user:"</span>+user.getName());</span><br><span class="line">    <span class="keyword">return</span> user;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>@RequestBody也能采用map来接收多个参数。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RequestMapping</span>(value = <span class="string">"/menu.spring"</span>,method = RequestMethod.POST)</span><br><span class="line"><span class="function"><span class="keyword">public</span> NewFrameResponseResult <span class="title">queryTreeList</span><span class="params">(@RequestBody Map&lt;String, Object&gt; param)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> NewFrameResponseResult.success(fyhsMenuTreeService.queryTreeList(param));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
       
     </div>
 
@@ -572,6 +557,12 @@ public NewFrameResponseResult queryTreeList(@RequestBody Map&lt;String, Object&g
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/servyou总结/" rel="tag"># servyou总结</a>
+          
+        </div>
+      
 
       
       
@@ -581,7 +572,7 @@ public NewFrameResponseResult queryTreeList(@RequestBody Map&lt;String, Object&g
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/05/20/spring/" rel="next" title="@Bean的用法">
+              <a href="/2019/05/20/注解@bean用法/" rel="next" title="@Bean的用法">
                 <i class="fa fa-chevron-left"></i> @Bean的用法
               </a>
             
@@ -674,9 +665,7 @@ public NewFrameResponseResult queryTreeList(@RequestBody Map&lt;String, Object&g
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-count">1</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -695,7 +684,9 @@ public NewFrameResponseResult queryTreeList(@RequestBody Map&lt;String, Object&g
                     
                       
                     
-                    <span class="site-state-item-count">1</span>
+                      
+                    
+                    <span class="site-state-item-count">2</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -784,7 +775,7 @@ public NewFrameResponseResult queryTreeList(@RequestBody Map&lt;String, Object&g
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">6 分钟</span>
+    <span title="站点阅读时长">5 分钟</span>
   
 </div>
 
