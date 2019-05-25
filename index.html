@@ -420,7 +420,7 @@
                 
               
 
-              <time title="创建时间：2019-05-25 13:59:57 / 修改时间：15:23:17" itemprop="dateCreated datePublished" datetime="2019-05-25T13:59:57+08:00">2019-05-25</time>
+              <time title="创建时间：2019-05-25 13:59:57 / 修改时间：15:26:48" itemprop="dateCreated datePublished" datetime="2019-05-25T13:59:57+08:00">2019-05-25</time>
             
 
             
@@ -507,47 +507,23 @@
 
       
         
-          
-            <h3 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h3><p>以前我都是在A电脑上写博客并且发布的，现在我想在B电脑里也写一篇博客并且发布。</p>
+          <h3 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h3><p>以前我都是在A电脑上写博客并且发布的，现在我想在B电脑里也写一篇博客并且发布。</p>
 <p>其实做法有两点：</p>
 <ol>
 <li>直接将A电脑的blog文件夹内容全部拷贝到B电脑对应位置（blog文件夹就是你安装hexo的目录，B电脑里也需要安装hexo环境）。</li>
-<li>利用github的分支特性来作为一个中间桥梁。</li>
-</ol>
-<h3 id="github的分支特性"><a href="#github的分支特性" class="headerlink" title="github的分支特性"></a>github的分支特性</h3><p>① 在A电脑里新建一个文件夹（我的是在d:\blog），把你github上的仓库克隆到blog下，命令：</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github<span class="selector-class">.com</span>:xxx/xxx<span class="selector-class">.github</span><span class="selector-class">.io</span><span class="selector-class">.git</span></span><br></pre></td></tr></table></figure>
-<p>② 进入xxx.github.io.git，删除文件夹里除了.git的其他所有文件</p>
-<p>③ 把A电脑里blog文件夹内的所有文件全部复制到xxx.github.io.git/下</p>
-<p>④ 创建一个叫hexo的分支，并切换到这个分支，命令：</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git checkout -<span class="selector-tag">b</span> hexo</span><br></pre></td></tr></table></figure>
-<p>⑤ 利用git的基本提交命令，将分支推送到远程，命令：</p>
-<p>添加所有文件到暂存区：</p>
-<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">add</span><span class="bash"> -A</span></span><br></pre></td></tr></table></figure>
-<p>提交</p>
-<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">git</span> commit -m <span class="string">"写你的提交描述"</span></span><br></pre></td></tr></table></figure>
-<p>推送hexo分支到远程github仓库</p>
-<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">push</span> --<span class="keyword">set</span>-upstream origin hexo</span><br></pre></td></tr></table></figure>
-<p>以上步骤弄完，相当于我把A电脑里的blog文件夹托管到了github的hexo分支下，下面来介绍我在B电脑里怎么去写博客。</p>
-<h3 id="B电脑里写博客"><a href="#B电脑里写博客" class="headerlink" title="B电脑里写博客"></a>B电脑里写博客</h3><p>① 首先在B电脑里，将博客的环境搭起来（hexo），这个跟搭建A电脑是一样的</p>
-<p>② 需要将xxx.github.io仓库克隆到本地，命令跟上面一致：</p>
-<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github<span class="selector-class">.com</span>:xxx/xxx<span class="selector-class">.github</span><span class="selector-class">.io</span><span class="selector-class">.git</span></span><br></pre></td></tr></table></figure>
-<p>③ 切换到hexo分支，将xxx.github.io文件里的scaffolds、source、themes、_config.yml复制到blog文件夹下（安装hexo的目录）</p>
-<p>④ 做完第③步，相当于A电脑里的本地blog内容已经转移到了B电脑里，执行命令：</p>
-<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">hexo g</span></span><br></pre></td></tr></table></figure>
-<p>我之前执行以上命令报错了，然后本地博客访问不了。后来我看了下themes/next，我发现next目录为空，也就是说我从git上拉下来的next就是空的。但是hexo初始化默认的主题文件landscape却有内容，想了想两者的对比，next主题我是从他人git上下载下来的，所以我在提交next的时候，其实提交没成功。（next已经被他人git管理了，我提交包含next的内容到我自己的git仓库，所以提交失败）。简而言之，你的主题文件如果不是从他人git上下载下来的就不会存在这个问题，否则这个只能拿U盘从A电脑里将themes文件夹替换到B电脑的themes。</p>
-<p>⑤ 开始新建博客，在blog目录下执行命令：</p>
-<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo <span class="keyword">new</span> <span class="type">post</span> <span class="string">"博客名称"</span></span><br></pre></td></tr></table></figure>
-<p>⑥ 博客写完后，从blog\source_posts\找到你的博客，然后复制到xxx.github.io\source_posts\，使用git基本命令提交代码。</p>
-<p>⑦ 此时，写的博客已经同步到了远程仓库，A电脑可以更新本地仓库就能拿到这个博客，现在就是考虑，我是要B电脑发布博客，还是A电脑发布博客。</p>
-<p>⑧ 假设使用A电脑发布博客，那么A电脑需要更新本地的hexo分支，然后拿到博客文件xxx.md复制到blog\source_posts\目录（这就相当于我就是用A电脑写了一篇博客），然后就执行基本的hexo部署发布命令就搞定了。</p>
-<p>⑨ 假设使用B电脑发布博客，直接在blog下执行hexo的部署发布命令即可。</p>
-<p><strong>注意事项：</strong></p>
-<p>不管是在A电脑发布还是在B电脑发布，两台电脑在写博客之前都要更新下本地的master和hexo分支。（master分支放的是部署发布后的文件，hexo分支放的是原始的blog下的文件）</p>
-
+<li>利用github的分支特性来作为一个中间桥梁。
+          <!--noindex-->
           
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/25/github写博客如果换电脑了怎么办/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
         
       
-    </div>
+    </li></ol></div>
 
     
 
