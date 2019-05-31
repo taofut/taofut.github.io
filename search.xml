@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[maven本地仓库有jar包，但是引入报错【servyou总结】]]></title>
+    <url>%2F2019%2F05%2F31%2Fmaven%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93%E6%9C%89jar%E5%8C%85%EF%BC%8C%E4%BD%86%E6%98%AF%E4%B8%8D%E8%83%BD%E5%BC%95%E5%85%A5%2F</url>
+    <content type="text"><![CDATA[我的工程结构父工程dubbo-server下有两个子工程，分别为：server-api（定义接口，打包发布到本地），server-provider（引入server-api的打包，并实现它的接口）。 然后又来了一个工程dubbo-client，它跟工程server-provider一样，引入server-api的打包。然后问题出现了，明明server-api已经打包到本地，server-provider引用没问题，dubbo-client引用就直接报错了。 报错体现 尝试的解决方案针对这种错误，按理说很常见也很容易解决。首先我在本地maven仓库里查看了下，发现这个jar包是存在的，pom文件的引用路径也没问题。于是怀疑是缓存导致的，我将Idea重启、clean、将maven依赖删除又重新加入、查看setting文件配置路径是否正确、甚至将server-api模块重新打包发布、maven工程不断刷新都没能解决。顿时感觉自己maven好弱~ 解决方案我去网上搜索了下问题，很多基本都是我上面的方案可以解决的，找了一阵子，终于有一段文字吸引了我： 如果你有子项目引用了父项目的POM，但没有在父项目POM目录下执行安装操作(父目录下执行mvn install)，这个问题就会出现。当一个子模块可能会依赖一个兄弟子模块而且去读取兄弟子模块的pom时，除非在父项目POM目录下至少执行一次安装，否则就会读取失败，即出现上述错误。 也就是说，dubbo-client引用server-api的jar包，除了server-api需要打包发布外，它的父工程dubbo-server也需要打包发布（mvn install），这样dubbo-client才能引用server-api不报错。server-provider由于本身就是dubbo-server下的子工程，所以引用server-api的时候没有报错。 总结平常对于maven多模块开发中，如果另外一个工程要引用某个子模块，切记子模块和它的父模块都需要打包发布。]]></content>
+      <categories>
+        <category>maven</category>
+      </categories>
+      <tags>
+        <tag>servyou总结</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[github写博客如果换电脑了怎么办]]></title>
     <url>%2F2019%2F05%2F25%2Fgithub%E5%86%99%E5%8D%9A%E5%AE%A2%E5%A6%82%E6%9E%9C%E6%8D%A2%E7%94%B5%E8%84%91%E4%BA%86%E6%80%8E%E4%B9%88%E5%8A%9E%2F</url>
     <content type="text"><![CDATA[思考以前我都是在A电脑上写博客并且发布的，现在我想在B电脑里也写一篇博客并且发布。 其实做法有两点： 直接将A电脑的blog文件夹内容全部拷贝到B电脑对应位置（blog文件夹就是你安装hexo的目录，B电脑里也需要安装hexo环境）。 利用github的分支特性来作为一个中间桥梁。 github的分支特性① 在A电脑里新建一个文件夹（我的是在d:\blog），把你github上的仓库克隆到blog下，命令： 1git clone git@github.com:xxx/xxx.github.io.git ② 进入xxx.github.io.git，删除文件夹里除了.git的其他所有文件 ③ 把A电脑里blog文件夹内的所有文件全部复制到xxx.github.io.git/下 ④ 创建一个叫hexo的分支，并切换到这个分支，命令： 1git checkout -b hexo ⑤ 利用git的基本提交命令，将分支推送到远程，命令： 添加所有文件到暂存区： 1git add -A 提交 1git commit -m "写你的提交描述" 推送hexo分支到远程github仓库 1git push --set-upstream origin hexo 以上步骤弄完，相当于我把A电脑里的blog文件夹托管到了github的hexo分支下，下面来介绍我在B电脑里怎么去写博客。 B电脑里写博客① 首先在B电脑里，将博客的环境搭起来（hexo），这个跟搭建A电脑是一样的 ② 需要将xxx.github.io仓库克隆到本地，命令跟上面一致： 1git clone git@github.com:xxx/xxx.github.io.git ③ 切换到hexo分支，将xxx.github.io文件里的scaffolds、source、themes、_config.yml复制到blog文件夹下（安装hexo的目录） ④ 做完第③步，相当于A电脑里的本地blog内容已经转移到了B电脑里，执行命令： 1hexo g 我之前执行以上命令报错了，然后本地博客访问不了。后来我看了下themes/next，我发现next目录为空，也就是说我从git上拉下来的next就是空的。但是hexo初始化默认的主题文件landscape却有内容，想了想两者的对比，next主题我是从他人git上下载下来的，所以我在提交next的时候，其实提交没成功。（next已经被他人git管理了，我提交包含next的内容到我自己的git仓库，所以提交失败）。简而言之，你的主题文件如果不是从他人git上下载下来的就不会存在这个问题，否则这个只能拿U盘从A电脑里将themes文件夹替换到B电脑的themes。 ⑤ 开始新建博客，在blog目录下执行命令： 1hexo new post "博客名称" ⑥ 博客写完后，从blog\source_posts\找到你的博客，然后复制到xxx.github.io\source_posts\，使用git基本命令提交代码。 ⑦ 此时，写的博客已经同步到了远程仓库，A电脑可以更新本地仓库就能拿到这个博客，现在就是考虑，我是要B电脑发布博客，还是A电脑发布博客。 ⑧ 假设使用A电脑发布博客，那么A电脑需要更新本地的hexo分支，然后拿到博客文件xxx.md复制到blog\source_posts\目录（这就相当于我就是用A电脑写了一篇博客），然后就执行基本的hexo部署发布命令就搞定了。 ⑨ 假设使用B电脑发布博客，直接在blog下执行hexo的部署发布命令即可。 注意事项： 不管是在A电脑发布还是在B电脑发布，两台电脑在写博客之前都要更新下本地的master和hexo分支。（master分支放的是部署发布后的文件，hexo分支放的是原始的blog下的文件）]]></content>
