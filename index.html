@@ -256,7 +256,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">5</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">6</span></a>
 
   </li>
         
@@ -275,7 +275,7 @@
       
     
 
-    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">3</span></a>
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">4</span></a>
 
   </li>
         
@@ -359,6 +359,201 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/06/04/merge into结合sql批处理用法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Taofut">
+      <meta itemprop="description" content="技术源于实践，技术改变世界">
+      <meta itemprop="image" content="/images/yu.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="云哥Y">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/04/merge into结合sql批处理用法/" class="post-title-link" itemprop="url">merge into结合sql批处理用法</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-04 10:21:13 / 修改时间：10:42:10" itemprop="dateCreated datePublished" datetime="2019-06-04T10:21:13+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Oracle基础/" itemprop="url" rel="index"><span itemprop="name">Oracle基础</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+		  
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">2.6k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">2 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h3><p>我们平常工作中一般都会有这样一个场景，我往数据库插入一条记录，如果该条记录已经存在，那么只需要更新；如果不存在，则直接插入。通常的做法就是，在插入这条数据之前，我先去数据库里查下该记录是否存在，然后再决定我是做insert操作还是update操作。这样一来，数据库就操作了两次，有木有更好的办法？</p>
+<p>我接到一个任务，将一个list集合里面的数据一次性插入到A表里，并且如果A表有重复记录则更新；反之，则插入。很显然，这要用到批处理，并且我需要拿到list里的所有元素去跟数据库比对，刷选出哪些是重复，哪些是新增。这样实现的结果代码不简洁，性能也不高。</p>
+<h3 id="merge-into-用法"><a href="#merge-into-用法" class="headerlink" title="merge into 用法"></a>merge into 用法</h3><p>有了merge into之后，事情就变得简单多了。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">"insertOrUpdate"</span> <span class="attr">parameterType</span>=<span class="string">"cn.com.ft.meta.bean.NfxMetaYwb"</span>&gt;</span></span><br><span class="line">    MERGE INTO Tab_A T1</span><br><span class="line">    USING (SELECT #&#123;ywbId,jdbcType=VARCHAR&#125; YWB_ID,</span><br><span class="line">                  #&#123;ywbms,jdbcType=VARCHAR&#125; YWBMS,</span><br><span class="line">                  #&#123;cjmc,jdbcType=VARCHAR&#125; CJMC,</span><br><span class="line">                  #&#123;fxdxlb,jdbcType=VARCHAR&#125; FXDXLB,</span><br><span class="line">                  #&#123;cjId,jdbcType=VARCHAR&#125; CJ_ID,</span><br><span class="line">                  #&#123;yxbz,jdbcType=VARCHAR&#125; YXBZ</span><br><span class="line">             FROM dual) T2</span><br><span class="line">    on (T1.YWB_ID = T2.YWB_ID)</span><br><span class="line">    WHEN MATCHED THEN</span><br><span class="line">      UPDATE</span><br><span class="line">         SET T1.YWBMS  = T2.YWBMS,</span><br><span class="line">             T1.CJMC   = T2.CJMC,</span><br><span class="line">             T1.FXDXLB = T2.FXDXLB,</span><br><span class="line">             T1.CJ_ID  = T2.CJ_ID,</span><br><span class="line">             T1.YXBZ   = T2.YXBZ</span><br><span class="line">    WHEN NOT MATCHED THEN</span><br><span class="line">      INSERT</span><br><span class="line">        (T1.YWB_ID, T1.YWBMS, T1.CJMC, T1.FXDXLB, T1.CJ_ID, T1.YXBZ)</span><br><span class="line">      VALUES</span><br><span class="line">        (T2.YWB_ID, T2.YWBMS, T2.CJMC, T2.FXDXLB, T2.CJ_ID, T2.YXBZ)</span><br><span class="line"><span class="tag">&lt;/<span class="name">insert</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>select语句就是查询list集合里的元素，采用 FROM dual 虚拟表的形式保证能从数据库查出一条记录来，其实查出来的记录就是参数list集合里的一个元素（T2来自list集合数据组成的临时表，T1是真实需要插入或更新的表）。通过on将两个表关联起来，后面如果重复，会执行update，将T2的数据更新到T1；如果是新记录，则执行insert，将T2的数据插入到T1。这样一来，我们不需要再去过多关注sql语句是insert还是update，只需要注重后台的调用即可。</p>
+<h3 id="后台批处理运用"><a href="#后台批处理运用" class="headerlink" title="后台批处理运用"></a>后台批处理运用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">saveFxys</span><span class="params">(String ywbId, List&lt;FxysDto&gt; fxysList)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//需要在获得session的时候指定批处理模式</span></span><br><span class="line">    SqlSession session = sqlSessionFactory.openSession(ExecutorType.BATCH);</span><br><span class="line">    NfxMetaFxysMapper fxysMapper = session.getMapper(NfxMetaFxysMapper.class);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!CollectionUtils.isEmpty(fxysList)) &#123;</span><br><span class="line">            <span class="comment">//每遍历一条记录，就组装一个insert语句</span></span><br><span class="line">            <span class="keyword">for</span> (FxysDto fxysDto : fxysList) &#123;</span><br><span class="line">                NfxMetaFxys nfxMetaFxys = <span class="keyword">new</span> NfxMetaFxys();</span><br><span class="line">                nfxMetaFxys.setYsid(fxysDto.getId());</span><br><span class="line">                nfxMetaFxys.setYwbId(ywbId);</span><br><span class="line">                nfxMetaFxys.setYsdm(fxysDto.getCode());</span><br><span class="line">                ... ...</span><br><span class="line">                    <span class="comment">//这里每遍历一条记录，就赋值给 merge into 那里的T2</span></span><br><span class="line">                    fxysMapper.insertOrUpdate(nfxMetaFxys);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//最终一并提交事务</span></span><br><span class="line">            session.commit();</span><br><span class="line">            <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">        &#125; </span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        log.error(e.getMessage(), e);</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        session.rollback();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (session != <span class="keyword">null</span>) &#123;</span><br><span class="line">            session.close();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1427,7 +1622,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -1450,7 +1645,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">3</span>
+                      
+                    
+                    <span class="site-state-item-count">4</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -1553,7 +1750,7 @@
       <i class="fa fa-area-chart"></i>
     </span>
     
-    <span title="站点总字数">8k</span>
+    <span title="站点总字数">11k</span>
   
 
   
@@ -1562,7 +1759,7 @@
       <i class="fa fa-coffee"></i>
     </span>
     
-    <span title="站点阅读时长">8 分钟</span>
+    <span title="站点阅读时长">10 分钟</span>
   
 </div>
 
@@ -2054,6 +2251,8 @@
 
   
   
+    
+      
     
       
     
